@@ -1,0 +1,86 @@
+services:
+  # Main Application (Bot + Worker + API)
+  - type: web
+    name: yt-dlp-bot-app
+    env: docker
+    dockerfilePath: ./Dockerfile.render
+    plan: starter
+    healthCheckPath: /status
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: LOG_LEVEL
+        value: INFO
+      - key: POSTGRES_HOST
+        fromService:
+          type: psql
+          name: yt-postgres
+          property: host
+      - key: POSTGRES_PORT
+        value: 5432
+      - key: POSTGRES_DB
+        fromService:
+          type: psql
+          name: yt-postgres
+          property: database
+      - key: POSTGRES_USER
+        fromService:
+          type: psql
+          name: yt-postgres
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromService:
+          type: psql
+          name: yt-postgres
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: yt-redis
+          property: host
+      - key: RABBITMQ_HOST
+        fromService:
+          type: pserv
+          name: yt-rabbitmq
+          property: host
+      - key: RABBITMQ_PORT
+        value: 5672
+      - key: RABBITMQ_USER
+        value: guest
+      - key: RABBITMQ_PASSWORD
+        value: guest
+      - key: TMP_DOWNLOAD_ROOT_PATH
+        value: /tmp/download_tmpfs
+      - key: STORAGE_PATH
+        value: /var/lib/data
+      # Telegram Config (User must fill these in Dashboard)
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: ALLOWED_USER_IDS
+        sync: false
+
+
+  # RabbitMQ (as a private service since Render has no managed RabbitMQ)
+  - type: pserv
+    name: yt-rabbitmq
+    env: docker
+    dockerImage: rabbitmq:3.12-management-alpine
+    plan: starter
+    envVars:
+      - key: RABBITMQ_DEFAULT_USER
+        value: guest
+      - key: RABBITMQ_DEFAULT_PASS
+        value: guest
+
+databases:
+  - name: yt-postgres
+    plan: starter
+    databaseName: yt
+    user: yt
+
+  - name: yt-redis
+    plan: starter
