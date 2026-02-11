@@ -67,8 +67,8 @@ services:
   # RabbitMQ (as a private service since Render has no managed RabbitMQ)
   - type: pserv
     name: yt-rabbitmq
-    env: docker
-    dockerImage: rabbitmq:3.12-management-alpine
+    env: image
+    image: rabbitmq:3.12-management-alpine
     plan: starter
     envVars:
       - key: RABBITMQ_DEFAULT_USER
