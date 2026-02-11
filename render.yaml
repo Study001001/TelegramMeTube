@@ -12,25 +12,23 @@ services:
       - key: LOG_LEVEL
         value: INFO
       - key: POSTGRES_HOST
-        fromService:
-          type: psql
+        fromDatabase:
           name: yt-postgres
           property: host
       - key: POSTGRES_PORT
-        value: 5432
+        fromDatabase:
+          name: yt-postgres
+          property: port
       - key: POSTGRES_DB
-        fromService:
-          type: psql
+        fromDatabase:
           name: yt-postgres
           property: database
       - key: POSTGRES_USER
-        fromService:
-          type: psql
+        fromDatabase:
           name: yt-postgres
           property: user
       - key: POSTGRES_PASSWORD
-        fromService:
-          type: psql
+        fromDatabase:
           name: yt-postgres
           property: password
       - key: REDIS_HOST
